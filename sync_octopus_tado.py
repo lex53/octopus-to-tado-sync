@@ -243,9 +243,9 @@ def discover_octopus_tariff_periods(
         if not tariff_code:
             continue
 
-        product_code = agreement.get("product_code") or derive_product_code_from_tariff_code(
-            tariff_code
-        )
+        product_code = agreement.get(
+            "product_code"
+        ) or derive_product_code_from_tariff_code(tariff_code)
         unit_rates = get_octopus_standard_unit_rates(api_key, product_code, tariff_code)
         agreement_periods = build_octopus_tariff_periods(agreement, unit_rates)
 
@@ -361,10 +361,11 @@ def get_consumption_since_date(api_key, mprn, gas_serial_number, since_datetime)
             )
             url = meter_readings.get("next", "")
         else:
-            print(
-                f"Failed to retrieve data. Status code: {response.status_code}, Message: {response.text}"
+            raise RuntimeError(
+                "Failed to retrieve Octopus consumption delta. "
+                f"MPRN: {mprn}, Gas serial number: {gas_serial_number}, "
+                f"Status code: {response.status_code}, Message: {response.text}"
             )
-            break
 
     return consumption_delta
 
@@ -423,10 +424,11 @@ def get_meter_reading_total_consumption(api_key, mprn, gas_serial_number, tado=N
             )
             url = meter_readings.get("next", "")
         else:
-            print(
-                f"Failed to retrieve data. Status code: {response.status_code}, Message: {response.text}"
+            raise RuntimeError(
+                "Failed to retrieve Octopus consumption data. "
+                f"MPRN: {mprn}, Gas serial number: {gas_serial_number}, "
+                f"Status code: {response.status_code}, Message: {response.text}"
             )
-            break
 
     print(
         "Total consumption (fallback - all available Octopus data): "
